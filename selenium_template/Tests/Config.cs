@@ -15,7 +15,7 @@ namespace selenium_template
     [SetUpFixture]
     public abstract class Config
     {
-        public IWebDriver driver;
+        public IWebDriver Driver { get; set; }
         protected ExtentReports _extent;
         protected ExtentTest _test;
 
@@ -28,20 +28,18 @@ namespace selenium_template
 
             _extent = new ExtentReports();
             _extent.AttachReporter(htmlReporter);
-
-            driver = new ChromeDriver();
         }
 
         [OneTimeTearDown]
         public void RunAfterAnyTests()
         {
             _extent.Flush();
-            driver.Close();
         }
 
         [SetUp]
         public void BeforeTest()
         {
+            Driver = new ChromeDriver();
             _test = _extent.CreateTest(TestContext.CurrentContext.Test.Name);
         }
 
@@ -81,12 +79,13 @@ namespace selenium_template
                 _test.Log(logstatus, "Test ended with " + logstatus + stacktrace);
             }
             _extent.Flush();
+            Driver.Close();
         }
 
         public string MakeScreenshot(string fileName)
         {
             var dir = TestContext.CurrentContext.TestDirectory + "\\";
-            Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
+            Screenshot ss = ((ITakesScreenshot)Driver).GetScreenshot();
             ss.SaveAsFile(dir + fileName,
             ScreenshotImageFormat.Png);
 

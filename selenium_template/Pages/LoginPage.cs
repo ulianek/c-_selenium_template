@@ -8,39 +8,28 @@ namespace selenium_template.Pages
 {
     class LoginPage: BasePage
     {
-        private IWebElement EmailInput
-        {
-            get
-            {
-                return driver.FindElement(By.Id("username"));
-            }
-        }
-
-        private IWebElement PasswordInput
-        {
-            get
-            {
-                return driver.FindElement(By.Id("pwd"));
-            }
-        }
-
-        private IWebElement LoginBtn
-        {
-            get
-            {
-                return driver.FindElement(By.XPath("//button[@ng-click='pwdCtrl.auth()']"));
-            }
-        }
 
         public LoginPage(IWebDriver driver): base(driver)
         {
+            Url = base.Url + "login";
         }
 
-        public void Login(string email, string password)
+        private IWebElement LoginFailesMsg => WaitAndGetElement(By.XPath("//div[@class='alert alert-danger']"));
+        private IWebElement EmailInput => WaitAndGetElement(By.Name("username"));
+        private IWebElement PasswordInput => WaitAndGetElement(By.Name("password"));
+        private IWebElement LoginBtn => WaitAndGetElement(By.XPath("//button[@class='btn btn-action btn-lg btn-block loginbtn']"));
+
+        public AccountPage Login(string email, string password)
         {
             EmailInput.SendKeys(email);
             PasswordInput.SendKeys(password);
             LoginBtn.Click();
+            return new AccountPage(Driver);
+        }
+
+        public bool LoginFailedMsgIsVisible()
+        {
+            return LoginFailesMsg != null;
         }
     }
 }

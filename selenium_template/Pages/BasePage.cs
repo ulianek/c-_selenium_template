@@ -1,25 +1,41 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using selenium_template.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace selenium_template.Pages
 {
-    class BasePage
+    public class BasePage : Helper
     {
         public string Url { get; set; }
-        public IWebDriver driver;
+        public WebDriverWait Waiter { get; set; }
 
-        public BasePage(IWebDriver driver)
+        public BasePage(IWebDriver driver) : base(driver)
         {
-            this.driver = driver;
+            Url = "https://www.phptravels.net/";
+            Waiter = new WebDriverWait(Driver, new TimeSpan(0, 0, 5));
         }
 
-        public void MakeScreenshot()
+        public IWebElement WaitAndGetElement(By locator)
         {
-            Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
-            ss.SaveAsFile("C://Image.png",
-            ScreenshotImageFormat.Png);
+            try
+            {
+                var element = Waiter.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(locator));
+                return element;
+            }
+            catch (WebDriverTimeoutException)
+            {
+                return null;
+            }
         }
+
+        public void Navigate()
+        {
+            Driver.Navigate().GoToUrl(Url);
+        }
+
     }
+
 }
